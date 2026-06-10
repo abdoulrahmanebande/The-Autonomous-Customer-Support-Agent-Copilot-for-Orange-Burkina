@@ -1,0 +1,12 @@
+beautifulsoup4
+requests
+langchain
+numpy 
+setuptools
+langchain-community 
+sentence-transformers
+langchain-google-genai
+pymupdf 
+jq 
+qdrant-client
+# -e .

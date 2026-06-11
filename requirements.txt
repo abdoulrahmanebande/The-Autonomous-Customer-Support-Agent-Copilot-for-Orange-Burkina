@@ -9,4 +9,6 @@ langchain-google-genai
 pymupdf 
 jq 
 qdrant-client
+fastapi
+uvicorn
 # -e .

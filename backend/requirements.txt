@@ -7,8 +7,10 @@ langchain-community
 sentence-transformers
 langchain-google-genai
 pymupdf 
+langchain-core
 jq 
 qdrant-client
+python-multipart
 fastapi
 uvicorn
 # -e .

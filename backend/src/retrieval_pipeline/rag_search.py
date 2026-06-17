@@ -1,6 +1,7 @@
 import os
 from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
+from sentence_transformers import CrossEncoder
 from langchain.messages import HumanMessage, SystemMessage
 from qdrant_client import QdrantClient
 from src.data_ingestion_pipeline.vector_store import QdrantVectorStore 
@@ -14,6 +15,45 @@ class Payload(BaseModel):
   url: str=Field(description='The URL of the content.')
   title: str=Field(description='The title of the content.')
   text: str=Field(description="The actual content's text.")
+  
+class GuardrailRAGEngine:
+    def __init__(self, vector_store, threshold: float = 0.30):
+        self.vector_store = vector_store
+        self.threshold = threshold
+        # Load a highly efficient, lightweight re-ranking model locally
+        self.reranker = CrossEncoder("BAAI/bge-reranker-v2-m3")
+
+    def get_secure_context(self, user_query: str) -> str:
+        # 1. Fetch a wider pool of initial documents from Qdrant (e.g., Top 8 instead of 3)
+        initial_chunks = self.vector_store.query(user_query, top_k=8)
+        
+        if not initial_chunks:
+            return ""
+
+        # 2. Prepare pairs for the cross-encoder model: [[query, doc1], [query, doc2], ...]
+        pairs = []
+        for chunk in initial_chunks:
+          text_content = chunk.get('metadata', {}).get('text','')
+          pairs.append([user_query, text_content])
+        
+        # 3. Compute precise relevance scores
+        scores = self.reranker.predict(pairs)
+        
+        verified_contents = []
+        for i, score in enumerate(scores):
+            print(f"[GUARDRAIL DEBUG] Chunk {i} Relevance Score: {score:.4f}")
+            
+            # 4. Apply the security threshold gate
+            if score >= self.threshold:
+                text_content = initial_chunks[i].get('metadata', {}).get('text','')
+                verified_contents.append(text_content)
+        
+        # 5. Return the clean text context
+        if not verified_contents:
+            print("[GUARDRAIL ALERT] No retrieved documents passed the safety threshold!")
+            return "TRIGGER_FALLBACK_SIGNAL"
+            
+        return "\n\n---\n\n".join(verified_contents[:3]) # Limit to top 3 best filtered chunks
   
 class RAGSearch:
   def __init__(
@@ -58,7 +98,8 @@ class RAGSearch:
     messages = [
       SystemMessage(content=(
           "You are a helpful customer support agent. Answer the user's question based strictly on the context. "
-          "Provide your complete answer in the 'text' field of the schema."
+          "If the context does not contain the answer, politely state that you do not know."
+          "Do not make up facts or use external knowledge outside of the context."
         )
       ),
       HumanMessage(content=f"Content:\n{context}\n\nQuestion:{query}\n\nAnswer:")

@@ -1,21 +1,62 @@
-# 🛰️ The Autonomous Customer Support Agent Copilot for Orange Burkina
+# The Autonomous Customer Support Agent Copilot for Orange Burkina 🛰️
 
-An advanced, asynchronous Retrieval-Augmented Generation (RAG) backend engine designed to analyze telecom documentation for Orange Burkina. This system dynamically processes French technical sheets, subscription criteria, and operational workflows natively. It integrates conversational memory, history rewriting, vector retrieval, cross-encoder guardrail re-ranking, and dynamic streaming multi-format file ingestion into a secure production architecture.
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/docker-enabled-blue.svg)](https://www.docker.com/)
+[![Qdrant](https://img.shields.io/badge/qdrant-vector--db-green.svg)](https://qdrant.tech/)
+[![Gemini API](https://img.shields.io/badge/gemini--api-llm--engine-orange.svg)](https://ai.google.dev/)
+[![FastAPI](https://img.shields.io/badge/fastapi-backend-teal.svg)](https://fastapi.tiangolo.com/)
+
+<br />
+<div align="center">
+  <a href="https://github.com/abdoulrahmanebande/The-Autonomous-Customer-Support-Agent-Copilot-for-Orange-Burkina">
+    <img src="https://raw.githubusercontent.com/abdoulrahmanebande/The-Autonomous-Customer-Support-Agent-Copilot-for-Orange-Burkina/main/docs/banner.png" alt="Logo" width="100%" height="auto" onerror="this.src='https://placehold.co/800x400?text=Orange+Burkina+Copilot+Architecture'">
+  </a>
+
+  <h3 align="center">Production-Grade Conversational RAG Engine</h3>
+
+  <p align="center">
+    An advanced, secure Retrieval-Augmented Generation (RAG) backend designed to process complex French telecom documentation, operational workflows, and plans natively.
+    <br />
+    <a href="#system-architecture"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="#preview">View Demo</a>
+    ·
+    <a href="https://github.com/abdoulrahmanebande/The-Autonomous-Customer-Support-Agent-Copilot-for-Orange-Burkina/issues">Report Bug</a>
+  </p>
+</div>
 
 ---
 
-## 💼 Executive Value Proposition (For Management)
+## 📺 Project Preview <a name="preview"></a>
 
-This solution directly addresses operational efficiency, cost reduction, and security compliance for Orange Burkina customer service:
-* **Zero Hallucination Risk:** By incorporating a cross-encoder verification layer, the AI is structurally blocked from providing false information or fabrications to customers, safeguarding corporate reputation.
-* **Cost & Performance Efficiency:** Instead of processing massive quantities of raw text data through cloud APIs—which incurs high token costs—the backend utilizes local, lightweight open-source models to filter and verify data on-site before calling final generation layers.
-* **Uninterrupted Service Availability:** Administrators can continuously ingest new technical files or update subscription plans while customers are actively chatting. The upload pipeline is completely isolated using background thread pools, maintaining zero system downtime.
+Below is a demonstration of the application in action, highlighting the administrative multi-file ingestion pipeline and real-time streaming conversational interface.
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/abdoulrahmanebande/The-Autonomous-Customer-Support-Agent-Copilot-for-Orange-Burkina/main/docs/preview.gif" alt="Project Demo" width="80%" onerror="this.style.display='none'">
+  <p><i>Live demonstration of multi-document ingest and secure RAG pipeline</i></p>
+</div>
 
 ---
 
-## 🏗️ Core Architectural Pipeline
+## 🚀 Overview
 
-The system is built as a robust pipeline prioritizing defensive structure and asynchronous background isolation:
+This project delivers an enterprise-ready customer support agent architecture tailored for **Orange Burkina**. Designed to read, understand, and securely reason over internal data sheets, it solves critical LLM production challenges through advanced software patterns:
+- **Zero Hallucination Risk:** Guarded by local asymmetric Cross-Encoder validation vectors.
+- **Contextual Memory:** Dynamically rewrites user queries using historical chat state.
+- **Asynchronous Scalability:** Decoupled multi-file upload execution via background thread pools.
+
+---
+
+## 💼 Business Value & Operational Strategy
+
+- **Risk Mitigation:** The local validation gate blocks irrelevant or adversarial user queries, protecting the enterprise from legal or brand liability.
+- **Token Cost Containment:** Broad, cheap local filtering prevents bloated document sizes from hitting external generative APIs, dramatically slicing operational compute costs.
+- **High Operational Availability:** Administrative ingest functions run concurrently with customer queries, allowing hot-swaps of internal policy documents without introducing server downtime.
+
+---
+
+## 🏗 System Architecture <a name="system-architecture"></a>
 
 ```text
                   [ USER CONVERSATIONAL INPUT ]
@@ -37,4 +78,5 @@ The system is built as a robust pipeline prioritizing defensive structure and as
              └── NO  ──► [DETERMINISTIC FALLBACK TRIGGERED]
                                 │
                                 ▼
-       [ Safe Final Synthesis / Streaming Markdown Output ]
+       [ Safe Final Synthesis / Streaming Markdown Output ] 
+```

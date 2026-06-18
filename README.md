@@ -80,3 +80,17 @@ This project delivers an enterprise-ready customer support agent architecture ta
                                 ▼
        [ Safe Final Synthesis / Streaming Markdown Output ] 
 ```
+
+## 📜 License 
+
+Distributed under the MIT License. See LICENSE for more information. 
+
+
+<br />
+
+<div align="center">
+<p>Developed with 🚀 by <b>BANDE Abdoul-Rahmane</b></p>
+<a href="https://www.google.com/search?q=https://linkedin.com/in/bandeabdoulrahmane">
+<img src="https://commons.wikimedia.org/wiki/File:LinkedIn_logo_initials.png" alt="LinkedIn">
+</a>
+</div>

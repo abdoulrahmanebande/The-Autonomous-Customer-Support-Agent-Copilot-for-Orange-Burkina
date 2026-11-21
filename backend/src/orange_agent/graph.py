@@ -125,8 +125,8 @@ def generate_answer(state: SupportState) -> dict[str, Any]:
             f"Historique récent:\n{history or 'Aucun'}\n\n"
             f"Contexte documentaire vérifié:\n{context}\n\n"
             f"Question: {_latest_human_message(state.get('messages', []))}\n\n"
-            f"Réponse (ajoute les sources à la fin si elles existent):\n"
-            f"{_source_label(chunks)}"
+            f"Sources disponibles:\n{_source_label(chunks)}\n\n"
+            "Réponds à la question et cite uniquement les sources pertinentes ci-dessus."
         )),
     ]
     answer = _services()["llm"].invoke(prompt).content

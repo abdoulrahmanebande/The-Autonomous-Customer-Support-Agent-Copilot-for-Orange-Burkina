@@ -11,7 +11,7 @@ from sentence_transformers import CrossEncoder
 from langgraph.graph import END, START, StateGraph
 
 from src.data_ingestion_pipeline.vector_store import QdrantVectorStore
-from .state import SupportState
+from src.orange_agent.state import SupportState
 
 load_dotenv()
 
@@ -25,7 +25,7 @@ def _services() -> dict[str, Any]:
     vector_store = QdrantVectorStore(collection_name="orange_telecom_store")
     reranker = CrossEncoder("BAAI/bge-reranker-v2-m3")
     llm = ChatGoogleGenerativeAI(
-        model=os.getenv("GOOGLE_MODEL", "gemini-2.5-flash"),
+        model="gemini-3.8-flash",
         temperature=0,
     )
     return {"vector_store": vector_store, "reranker": reranker, "llm": llm}
@@ -73,7 +73,7 @@ def retrieve_documents(state: SupportState) -> dict[str, Any]:
 
 
 def validate_relevance(state: SupportState) -> dict[str, Any]:
-    """Keep only passages that pass the existing cross-encoder guardrail."""
+    """Keep the highest-scoring passages that pass the relevance guardrail."""
     chunks = state.get("retrieved_chunks", [])
     if not chunks:
         return {"verified_chunks": []}
@@ -83,14 +83,25 @@ def validate_relevance(state: SupportState) -> dict[str, Any]:
         [query, (chunk.get("metadata") or {}).get("text", "")]
         for chunk in chunks
     ]
+
     scores = _services()["reranker"].predict(pairs)
     threshold = float(os.getenv("RERANKER_THRESHOLD", "0.35"))
 
     verified = []
+
     for chunk, score in zip(chunks, scores):
         metadata = chunk.get("metadata") or {}
+
         if float(score) >= threshold and metadata.get("text"):
-            verified.append({**metadata, "relevance_score": float(score)})
+            verified.append({
+                **metadata,
+                "relevance_score": float(score),
+            })
+
+    verified.sort(
+        key=lambda chunk: chunk["relevance_score"],
+        reverse=True,
+    )
 
     return {"verified_chunks": verified[:3]}
 
@@ -129,7 +140,18 @@ def generate_answer(state: SupportState) -> dict[str, Any]:
             "Réponds à la question et cite uniquement les sources pertinentes ci-dessus."
         )),
     ]
-    answer = _services()["llm"].invoke(prompt).content
+    
+    print(
+        f"[generate_answer] Starting Gemini call. "
+        f"Verified chunks: {len(chunks)}, context characters: {len(context)}",
+        flush=True,
+    )
+
+    response = _services()["llm"].invoke(prompt)
+
+    print("[generate_answer] Gemini call completed.", flush=True)
+
+    answer = response.content
     return {"messages": [AIMessage(content=str(answer))]}
 
 

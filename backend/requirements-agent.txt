@@ -1,0 +1,8 @@
+# Install the existing backend dependencies plus LangGraph support.
+-r requirements.txt
+
+# Aegra requires Python 3.12+; install its CLI separately with:
+#   pip install aegra-cli
+langgraph
+langgraph-sdk
+python-dotenv

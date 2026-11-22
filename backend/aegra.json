@@ -1,0 +1,5 @@
+{
+  "graphs": {
+    "orange_support": "./src/orange_agent/graph.py:graph"
+  }
+}
